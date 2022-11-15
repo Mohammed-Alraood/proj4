@@ -11,6 +11,7 @@ grad<- function(func, paras){
   g[i] <- expression(D(func,paras[i]))
   }
   
+  return(g)
 }
   
 
