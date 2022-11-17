@@ -54,8 +54,8 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
     deltaa <- -(chol2inv(chol(hess(x,...)))) %*% grad(x,...)
     
     #test objective function values after each iteration using Taylor's theorem
-    func(x,...)= func(x,...)+t(deltaa) %*%grad(x,...) + 0.5 * t(deltaa) %*% hess(x,...) %*% deltaa 
-    
+    obj_f= func(x,...)+t(deltaa) %*%grad(x,...) + 0.5 * t(deltaa) %*% hess(x,...) %*% deltaa 
+    obj_f<- func(x,...)
   }
    x
     
