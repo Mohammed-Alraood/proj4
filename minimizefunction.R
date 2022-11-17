@@ -58,8 +58,9 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
   #check if we have reached convergence
   check<-abs(ng) <  tol*nf + fscale
   
-
+  count=0
    while(any(check==FALSE)){
+     count=count+1
      #minimizing function
     mf<- -chol2inv(chol(nh)) %*% ng
     #new theta values
@@ -75,8 +76,19 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
     check<-abs(ng) <  tol*nf + fscale
      
    }
+  #function evaluated at the minimum
+  fmin<- nf
+  #iterations taken to find minimum
+  iter<-count
+  #gradient evaluated minimum
+  gmin<- ng
+  #inverse evaluated at the minimum
+  Hi<- -chol2inv(chol(nh))
   
-  return(theta)
+  
+  rl<-list(fmin,theta,iter,gmin,Hi)
+  
+  return(rl)
   
   
   
