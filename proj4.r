@@ -33,7 +33,7 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
         the1[i] <- the1[i] + eps   ##compute resulting 
         hess1 <- grad (the1,...) ##compute resulting 
         Hfd [i,] <- (hess1-hees)/eps  ##approximate second derives
-  }
+  }}
 
       #evaluate function,grad and hess at theta
       nf<-func(theta)
