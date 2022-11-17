@@ -24,33 +24,45 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
   #if hessian matrix not provided, an approximation to Hessian is provided by finite differencing approximation
   #of the the gradient vector, finding the hessian matrix
   if (is.null(hess)==TRUE) {
-    He <- function (theta,...) {
+    
+      #test the hessian by finite difference aprox
+      hees <- grad(theta,...) ##grad of grad
+      Hfd <- matrix (theta,length(theta),length(theta))  #finite diference Hessian
+      for (i in 1:length((theta))) {
+        the1 <- theta
+        the1[i] <- the1[i] + eps   ##compute resulting 
+        hess1 <- grad (the1,...) ##compute resulting 
+        Hfd [i,] <- (hess1-hees)/eps  ##approximate second derives
+  }
 
-  #test the hessian by finite difference aprox
-  hees <- grad(theta,...) ##grad of grad at
-  Hfd <- matrix (0,2,2)  #finite diference Hessian
-  for (i in 1:length((theta))) {
-    the1 <- theta
-    the1[i] <- the1[i] + eps   ##compute resulting 
-    hess1 <- grad (the1,t= , y=y) ##compute resulting 
-    Hfd [i,] <- (hess1-hees)/eps  ##approximate second derives
-  }}
-  x= theta
   
-  
+  #check if the objective or derivative is finite, if yes stop and pup up a message stating it's not finite
+    if ( is.finite(func(theta)== FALSE)|| is.finite(grad(theta)) ==FALSE){
+      
+      stop("The objective function or the derivative is not finite")
+    }
+      
+  #ch
   
   #while loop to find the min value of the objective fucntion
     #counter to count the iteration
    counter=1
+  #while loop to check each element of gradient matrix 
+   #seeing whether all elements of the gradient vector have absolute value less
+   #than tol times the absolute value of the objective function plus fscale
+   
+  while (abs(grad(theta))< tol * abs(func(theta)+ fscale)) {
+    
+  
    #while loop to find the min value for the obj function
-  while (abs(func(x,...))>tol || counter <= maxit)  {
+  while (abs(func(theta,...))>tol || counter <= maxit)  {
     
     #minimize the quadratic
-    deltaa <- -(chol2inv(chol(hess(x,...)))) %*% grad(x,...)
+    deltaa <- -(chol2inv(chol(hess(theta,...)))) %*% grad(theta,...)
     
-    #test objective function values after each iteration using Taylor's theorem
-    obj_f= func(x,...)+t(deltaa) %*%grad(x,...) + 0.5 * t(deltaa) %*% hess(x,...) %*% deltaa 
-    obj_f<- func(x,...)
+    theta= theta - deltaa
+    
+    
   }
    x
     
@@ -62,7 +74,7 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
     
     rl<- list(f,theta,iter,g,Hi)
     return(rl)
-  }
+  }}}
   
   
   
