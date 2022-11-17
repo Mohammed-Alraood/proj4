@@ -2,9 +2,11 @@
 #Group Member: Chloe Bircham s2415006, Mohammed Alraood s2227255, Xinyan Chen s2304087
 #https://github.com/Mohammed-Alraood/proj4.git
 #contribution: 
-#Chloe Bircham:
+#Chloe Bircham:Created minimizing function mf, apply to function, perturb if matrix not positive def
+##check for convergence and set maxit, maxhalf conditions.
 #Mohammed Alraood:
-#Xinyan Chen:
+#Xinyan Chen:Provide specific iterative steps for Newton's method, check the code and suggest changes
+##and comments on the gradient comparison and warning parts.
 
 fdhess<-function(theta,grad,hess){
   #function for finding finite difference of hessian if it is not provided
