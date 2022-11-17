@@ -24,22 +24,20 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
   #if hessian matrix not provided, an approximation to Hessian is provided by finite differencing approximation
   #of the the gradient vector, finding the hessian matrix
   if (hess ==0) {
+  if (is.null(hess)==TRUE) {
     He <- function (theta,...) {
-      ##hessian of the function  
-      alpha
       
     }}
-  
+
   #test the hessian by finite difference aprox
-  hees <- grad(theta,t, y) ##grad of grad at
-  eps <- le-8 ##fininte difference interval 
-  Hfd <- matrix (0,)  #finite diference Hessian
+  hees <- grad(theta,...) ##grad of grad at
+  Hfd <- matrix (0,2,2)  #finite diference Hessian
   for (i in 1:length((theta))) {
     the1 <- theta
     the1[i] <- the1[i] + eps   ##compute resulting 
     hess1 <- grad (the1,t= , y=y) ##compute resulting 
     Hfd [i,] <- (hess1-hees)/eps  ##approximate second derives
-  }
+  }}
   x= theta
   
   
