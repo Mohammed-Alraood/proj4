@@ -44,8 +44,13 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
   #evaluate function,grad and hess at theta
   nf<-func(theta)
   ng<-grad(theta)
-  nh<-hb(theta)
-  
+  nh<-hess(theta)
+  eigenvals<-eigen(nh)[[1]]
+  while(any(eigenvals<=0)==TRUE){
+    nh<- nh + length(theta)*diag(length(theta))
+    eigenvals<-eigen(nh)[[1]]
+    
+  }
   
   #check if we have reached convergence
   check<-abs(ng) <  tol*nf + fscale
