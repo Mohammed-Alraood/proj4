@@ -48,7 +48,7 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
     #counter to count the iteration
    counter=1
    #while loop to find the min value for the obj function
-  while (abs(rb(x,...))>tol || counter <= maxit)  {
+  while (abs(func(x,...))>tol || counter <= maxit)  {
     
     #minimize the quadratic
     deltaa <- -(chol2inv(chol(hess(x,...)))) %*% grad(x,...)
