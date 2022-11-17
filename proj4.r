@@ -56,8 +56,8 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
         
       }
       
-      #IF objective and derivatives not finite, stop method and conclude method will not work
-      #check if the objective or derivative is finite, if yes stop and pup up a message stating it's not finite
+
+      #check if the objective or derivative is finite, if yes stop and display warning message stating it's not finite
       if ( is.finite(func(theta)== FALSE)|| is.finite(grad(theta)) ==FALSE){
         
         warning("The objective function or the derivative is not finite")
@@ -101,6 +101,11 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
       Hi<- -chol2inv(chol(nh))
       
       
+      #IF hessian not finite, warning message
+      if ( is.finite(hess(theta)== FALSE)){
+        
+        warning("The Hessian matrix is not finite at convergence")
+      }
       rl<-list(fmin,theta,iter,gmin,Hi)
       
       return(rl)
