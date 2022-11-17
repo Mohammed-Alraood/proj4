@@ -52,9 +52,6 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
   #iter: number of iterations needed to reach minimum
   #g: gradient vector at the minimum
   #Hi: the inverse of the hessian at minimum
-  #
-  
-  
   
   
   #call finite difference hessian function to determine hessian matrix, if hess defined or not
@@ -157,7 +154,7 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
     
     warning("The Hessian matrix is not finite at convergence")
   }
-  rl<-list(fmin,theta,iter,gmin,Hi)
+  rl<-list(f=fmin,theta,iter,g=gmin,Hi)
   
   return(rl)
   
