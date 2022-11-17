@@ -27,7 +27,7 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
     
       #test the hessian by finite difference aprox
       hees <- grad(theta,...) ##grad of grad
-      Hfd <- matrix (theta,length(theta),length(theta))  #finite diference Hessian
+      Hfd <- matrix (0,length(theta),length(theta))  #finite diference Hessian
       for (i in 1:length((theta))) {
         the1 <- theta
         the1[i] <- the1[i] + eps   ##compute resulting 
