@@ -55,8 +55,16 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
     
   }
   
+  #IF objective and derivatives not finite, stop method and conclude method will not work
+  #check if the objective or derivative is finite, if yes stop and pup up a message stating it's not finite
+  if ( is.finite(func(theta)== FALSE)|| is.finite(grad(theta)) ==FALSE){
+
+    warning("The objective function or the derivative is not finite")
+  }
+  
+  
   #check if we have reached convergence
-  check<-abs(ng) <  tol*nf + fscale
+  check<-abs(ng) <  tol*abs(nf) + fscale
   
   count=0
    while(any(check==FALSE)){
