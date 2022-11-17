@@ -36,19 +36,4 @@
    return(g)
  }
  
-hessi<- function(func,theta){
-  fhess<-hess(func,theta)
 
-  
-}
-
-newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.half=20, eps=1e-6){
-  hessi<- 1/d*matrix(c(hess[4], -hess[2], -hess[3], hess[1]))
-  ngrad<- grad(theta[1],theta[2])
-  mfunc<- -hessi %*% ngrad
-  
-  taylorT<- func(theta[1],theta[2]) + t(mfunc)%*%ngrad + 0.5* t(mfunc)%*%hess %*% mfunc
-  
-  #rl<- list(f,theta,iter,g,Hi)
-  return(taylorT)
-}
