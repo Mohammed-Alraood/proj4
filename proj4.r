@@ -23,11 +23,8 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
   
   #if hessian matrix not provided, an approximation to Hessian is provided by finite differencing approximation
   #of the the gradient vector, finding the hessian matrix
-  if (hess ==0) {
   if (is.null(hess)==TRUE) {
     He <- function (theta,...) {
-      
-    }}
 
   #test the hessian by finite difference aprox
   hees <- grad(theta,...) ##grad of grad at
