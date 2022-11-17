@@ -1,11 +1,66 @@
-
 newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.half=20, eps=1e-6){
-  nh<-NULL
- 
-  
+
   #if hessian matrix not provided, an approximation to Hessian is provided by finite differencing approximation
   #of the the gradient vector, finding the hessian matrix
   if (is.null(hess)==TRUE) {
+    #test the hessian by finite difference aprox
+    hees <- grad(theta,...) ##grad of grad
+    Hfd <- matrix (0,length(theta),length(theta))  #finite diference Hessian
+    for (i in 1:length((theta))) {
+      the1 <- theta
+      the1[i] <- the1[i] + eps   ##compute resulting 
+      hess1 <- grad(the1,...) ##compute resulting 
+      Hfd [i,] <- (hess1-hees)/eps  ##approximate second derives
+      nh<-Hfd
+    }
+  }else{
+    nh<-hess(theta)
+  }
+  
+  #evaluate function and grad at theta
+  nf<-func(theta)
+  ng<-grad(theta)
+
+  #find eigenvalues for postive definitiveness 
+  eigenvals<-eigen(nh)[[1]]
+
+  while(any(eigenvals<=0)==TRUE){
+    #if eigenvalues are negative, matrix is not positive definite
+    #perturb hessian to arrive at a positive definite matrix
+    nh<- nh + length(theta)*diag(length(theta))
+    eigenvals<-eigen(nh)[[1]]
+  }
+  
+  
+  #check if the objective or derivative is finite, if yes stop and display warning message stating it's not finite
+  if ( is.finite(func(theta)== FALSE)|| is.finite(grad(theta)) ==FALSE){
+    
+    warning("The objective function or the derivative is not finite")
+  }
+  
+  
+  #check if we have reached convergence
+  check<-abs(ng) <  tol*abs(nf) + fscale
+  count=0
+  while(any(check==FALSE) ){
+    
+    #Check if maximum iterations have been reached, if they have without convergence, exit method
+    if(count > maxit){
+      stop("max iterations reached: did not reach convergence")
+    }
+    
+    count=count+1
+    #minimizing function
+    mf<- -chol2inv(chol(nh)) %*% ng
+    #new theta values
+    theta<- theta+mf
+    
+    
+    nf<-func(theta)
+    ng<-grad(theta)
+    
+  #computing new hessian at min
+    if (is.null(hess)==TRUE) {
       #test the hessian by finite difference aprox
       hees <- grad(theta,...) ##grad of grad
       Hfd <- matrix (0,length(theta),length(theta))  #finite diference Hessian
@@ -16,84 +71,34 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
         Hfd [i,] <- (hess1-hees)/eps  ##approximate second derives
         nh<-Hfd
       }
-      }
-
-      #evaluate function,grad and hess at theta
-      nf<-func(theta)
-      ng<-grad(theta)
-      
-      #if hessian is provided, evaluate it at theta
-      if(is.null(nh)==TRUE){
-        print(nh)
-      nh<-hess(theta)}
-      
-      #find eigenvalues for postive definitiveness 
-      eigenvals<-eigen(nh)[[1]]
-      
-      while(any(eigenvals<=0)==TRUE){
-        #if eigenvalues are negative, matrix is not positive definite
-        #perturb hessian to arrive at a positive definite matrix
-        nh<- nh + length(theta)*diag(length(theta))
-        eigenvals<-eigen(nh)[[1]]
-        
-      }
-      
-
-      #check if the objective or derivative is finite, if yes stop and display warning message stating it's not finite
-      if ( is.finite(func(theta)== FALSE)|| is.finite(grad(theta)) ==FALSE){
-        
-        warning("The objective function or the derivative is not finite")
-      }
-      
-      
-      #check if we have reached convergence
-      check<-abs(ng) <  tol*abs(nf) + fscale
-      
-      count=0
-      while(any(check==FALSE) ){
-        
-        #Check if maximum iterations have been reached, if they have without convergence, exit method
-        if(count > maxit){
-          stop("max iterations reached: did not reach convergence")
-        }
-        
-        count=count+1
-        #minimizing function
-        mf<- -chol2inv(chol(nh)) %*% ng
-        #new theta values
-        theta<- theta+mf
-        
-        
-        nf<-func(theta)
-        ng<-grad(theta)
-        nh<-hb(theta)
-        
-        
-        #check if we have reached convergence
-        check<-abs(ng) <  tol*nf + fscale
-        
-      }
-      #function evaluated at the minimum
-      fmin<- nf
-      #iterations taken to find minimum
-      iter<-count
-      #gradient evaluated minimum
-      gmin<- ng
-      #inverse evaluated at the minimum
-      Hi<- -chol2inv(chol(nh))
-      
-      
-      #IF hessian not finite, warning message
-      if ( is.finite(hess(theta)== FALSE)){
-        
-        warning("The Hessian matrix is not finite at convergence")
-      }
-      rl<-list(fmin,theta,iter,gmin,Hi)
-      
-      return(rl)
-      
-      
+    } else{
+    nh<-hess(theta)}
+    
+    #check if we have reached convergence
+    check<-abs(ng) <  tol*nf + fscale
+    
   }
+  #function evaluated at the minimum
+  fmin<- nf
+  #iterations taken to find minimum
+  iter<-count
+  #gradient evaluated minimum
+  gmin<- ng
+  #inverse evaluated at the minimum
+  Hi<- -chol2inv(chol(nh))
+  
+  
+  #IF hessian not finite, warning message
+  if ( any(is.finite(nh)==FALSE)==TRUE){
+    
+    warning("The Hessian matrix is not finite at convergence")
+  }
+  rl<-list(fmin,theta,iter,gmin,Hi)
+  
+  return(rl)
+  
+  
+}
 
 
 #given functions
