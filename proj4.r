@@ -18,28 +18,34 @@
 
 
 newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.half=20, eps=1e-6){
-  
+  nh<-NULL
  
   
   #if hessian matrix not provided, an approximation to Hessian is provided by finite differencing approximation
   #of the the gradient vector, finding the hessian matrix
   if (is.null(hess)==TRUE) {
-    
       #test the hessian by finite difference aprox
       hees <- grad(theta,...) ##grad of grad
       Hfd <- matrix (0,length(theta),length(theta))  #finite diference Hessian
       for (i in 1:length((theta))) {
         the1 <- theta
         the1[i] <- the1[i] + eps   ##compute resulting 
-        hess1 <- grad (the1,...) ##compute resulting 
+        hess1 <- grad(the1,...) ##compute resulting 
         Hfd [i,] <- (hess1-hees)/eps  ##approximate second derives
-        hess<-Hfd
-  }}
+        nh<-Hfd
+      }
+      }
 
       #evaluate function,grad and hess at theta
       nf<-func(theta)
       ng<-grad(theta)
-      nh<-hess(theta)
+      
+      #if hessian is provided, evaluate it at theta
+      if(is.null(nh)==TRUE){
+        print(nh)
+      nh<-hess(theta)}
+      
+      #find eigenvalues for postive definitiveness 
       eigenvals<-eigen(nh)[[1]]
       
       while(any(eigenvals<=0)==TRUE){
