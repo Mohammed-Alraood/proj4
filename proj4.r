@@ -1,21 +1,31 @@
-newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.half=20, eps=1e-6){
-
+fdhess<-function(theta,grad,hess){
+  #function for finding finite difference of hessian if it is not provided
+  #input theta values, gradient vector and hess provided or =NULL
+  #returns the hessian
   #if hessian matrix not provided, an approximation to Hessian is provided by finite differencing approximation
   #of the the gradient vector, finding the hessian matrix
-  if (is.null(hess)==TRUE) {
-    #test the hessian by finite difference aprox
-    hees <- grad(theta,...) ##grad of grad
-    Hfd <- matrix (0,length(theta),length(theta))  #finite diference Hessian
-    for (i in 1:length((theta))) {
-      the1 <- theta
-      the1[i] <- the1[i] + eps   ##compute resulting 
-      hess1 <- grad(the1,...) ##compute resulting 
-      Hfd [i,] <- (hess1-hees)/eps  ##approximate second derives
-      nh<-Hfd
-    }
-  }else{
-    nh<-hess(theta)
+if (is.null(hess)==TRUE) {
+  #test the hessian by finite difference aprox
+  hees <- grad(theta,...) ##grad of grad
+  Hfd <- matrix (0,length(theta),length(theta))  #finite diference Hessian
+  for (i in 1:length((theta))) {
+    the1 <- theta
+    the1[i] <- the1[i] + eps   ##compute resulting 
+    hess1 <- grad(the1,...) ##compute resulting 
+    Hfd [i,] <- (hess1-hees)/eps  ##approximate second derives
+    nh<-Hfd
   }
+}else{
+  nh<-hess(theta)
+}
+  return(nh)
+}
+
+
+newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.half=20, eps=1e-6){
+
+  #call finite difference hessian function to determine hessian matrix, if hess defined or not
+  nh<-fdhess(theta,grad,hess)
   
   #evaluate function and grad at theta
   nf<-func(theta)
@@ -55,24 +65,12 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
     #new theta values
     theta<- theta+mf
     
-    
     nf<-func(theta)
     ng<-grad(theta)
     
   #computing new hessian at min
-    if (is.null(hess)==TRUE) {
-      #test the hessian by finite difference aprox
-      hees <- grad(theta,...) ##grad of grad
-      Hfd <- matrix (0,length(theta),length(theta))  #finite diference Hessian
-      for (i in 1:length((theta))) {
-        the1 <- theta
-        the1[i] <- the1[i] + eps   ##compute resulting 
-        hess1 <- grad(the1,...) ##compute resulting 
-        Hfd [i,] <- (hess1-hees)/eps  ##approximate second derives
-        nh<-Hfd
-      }
-    } else{
-    nh<-hess(theta)}
+    nh<-fdhess(theta,grad,hess)
+    
     
     #check if we have reached convergence
     check<-abs(ng) <  tol*nf + fscale
