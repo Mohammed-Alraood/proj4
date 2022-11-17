@@ -62,12 +62,25 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
     count=count+1
     #minimizing function
     mf<- -chol2inv(chol(nh)) %*% ng
-    #new theta values
-    theta<- theta+mf
+
+     trynew<- theta+mf
+count2<-0
+    while(nf< func(trynew)){
+      if(count2>max.half){
+        stop("Reaches maximum limit of step halving: did not reach convergence")
+      }
+      mf<-0.5*mf
+      trynew<- theta+mf
+    
+
+    }
+
+
+    theta<-theta+mf
+    
     
     nf<-func(theta)
     ng<-grad(theta)
-    
   #computing new hessian at min
     nh<-fdhess(theta,grad,hess)
     
