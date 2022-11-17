@@ -4,16 +4,16 @@
  ## to see how it works, paras must be string form and 
 #Function must be used as an expression
 
-grad<- function(func, paras){
-  g <- (1:length(paras))*0
-  
-  for(i in 1:length(paras)){
-  g[i] <- expression(D(func,paras[i]))
-  }
-  
-  return(g)
-}
-  
+# grad<- function(func, paras){
+#   g <- (1:length(paras))*0
+#   
+#   for(i in 1:length(paras)){
+#   g[i] <- expression(D(func,paras[i]))
+#   }
+#   
+#   return(g)
+# }
+#   
 
 
 
@@ -35,52 +35,133 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
         Hfd [i,] <- (hess1-hees)/eps  ##approximate second derives
   }
 
-  
-  #check if the objective or derivative is finite, if yes stop and pup up a message stating it's not finite
-    if ( is.finite(func(theta)== FALSE)|| is.finite(grad(theta)) ==FALSE){
+      #evaluate function,grad and hess at theta
+      nf<-func(theta)
+      ng<-grad(theta)
+      nh<-hess(theta)
+      eigenvals<-eigen(nh)[[1]]
       
-      stop("The objective function or the derivative is not finite")
-    }
+      while(any(eigenvals<=0)==TRUE){
+        #if eigenvalues are negative, matrix is not positive definite
+        #perturb hessian to arrive at a positive definite matrix
+        nh<- nh + length(theta)*diag(length(theta))
+        eigenvals<-eigen(nh)[[1]]
+        
+      }
       
-  #ch
-  
-  #while loop to find the min value of the objective fucntion
-    #counter to count the iteration
-   counter=1
-  #while loop to check each element of gradient matrix 
-   #seeing whether all elements of the gradient vector have absolute value less
-   #than tol times the absolute value of the objective function plus fscale
-   
-  while (abs(grad(theta))< tol * abs(func(theta)+ fscale)) {
-    
-  
-   #while loop to find the min value for the obj function
-  while (abs(func(theta,...))>tol || counter <= maxit)  {
-    
-    #minimize the quadratic
-    deltaa <- -(chol2inv(chol(hess(theta,...)))) %*% grad(theta,...)
-    
-    theta= theta - deltaa
-    
-    
+      #IF objective and derivatives not finite, stop method and conclude method will not work
+      #check if the objective or derivative is finite, if yes stop and pup up a message stating it's not finite
+      if ( is.finite(func(theta)== FALSE)|| is.finite(grad(theta)) ==FALSE){
+        
+        warning("The objective function or the derivative is not finite")
+      }
+      
+      
+      #check if we have reached convergence
+      check<-abs(ng) <  tol*abs(nf) + fscale
+      
+      count=0
+      while(any(check==FALSE)){
+        count=count+1
+        #minimizing function
+        mf<- -chol2inv(chol(nh)) %*% ng
+        #new theta values
+        theta<- theta+mf
+        
+        
+        nf<-func(theta)
+        ng<-grad(theta)
+        nh<-hb(theta)
+        
+        
+        #check if we have reached convergence
+        check<-abs(ng) <  tol*nf + fscale
+        
+      }
+      #function evaluated at the minimum
+      fmin<- nf
+      #iterations taken to find minimum
+      iter<-count
+      #gradient evaluated minimum
+      gmin<- ng
+      #inverse evaluated at the minimum
+      Hi<- -chol2inv(chol(nh))
+      
+      
+      rl<-list(fmin,theta,iter,gmin,Hi)
+      
+      return(rl)
+      
+      
   }
-   x
-    
-    
-  
-    
-    
-    counter <- counter+1 #add number of iteration
-    
-    rl<- list(f,theta,iter,g,Hi)
-    return(rl)
-  }}}
-  
-  
-  
-  
-  
-
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+  #     
+  #     
+  # 
+  # #check if the objective or derivative is finite, if yes stop and pup up a message stating it's not finite
+  #   if ( is.finite(func(theta)== FALSE)|| is.finite(grad(theta)) ==FALSE){
+  #     
+  #     warning("The objective function or the derivative is not finite")
+  #   }
+  #     
+  # #ch
+  # 
+  # #while loop to find the min value of the objective fucntion
+  #   #counter to count the iteration
+  #  counter=1
+  # #while loop to check each element of gradient matrix 
+  #  #seeing whether all elements of the gradient vector have absolute value less
+  #  #than tol times the absolute value of the objective function plus fscale
+  #  
+  # while (abs(grad(theta))< tol * abs(func(theta)+ fscale)) {
+  #   
+  # 
+  #  #while loop to find the min value for the obj function
+  # while (abs(func(theta,...))>tol || counter <= maxit)  {
+  #   
+  #   #minimize the quadratic
+  #   deltaa <- -(chol2inv(chol(hess(theta,...)))) %*% grad(theta,...)
+  #   
+  #   theta= theta - deltaa
+  #   
+  #   
+  # }
+  #  x
+  #   
+  #   
+  # 
+  #   
+  #   
+  #   counter <- counter+1 #add number of iteration
+  #   
+  #   rl<- list(f,theta,iter,g,Hi)
+  #   return(rl)
+  # }}}
+  # 
+  # 
+  # 
+  # 
+  # 
+  # 
 
 
 
