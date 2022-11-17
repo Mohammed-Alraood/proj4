@@ -68,7 +68,13 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
       check<-abs(ng) <  tol*abs(nf) + fscale
       
       count=0
-      while(any(check==FALSE)){
+      while(any(check==FALSE) ){
+        
+        #Check if maximum iterations have been reached, if they have without convergence, exit method
+        if(count > maxit){
+          stop("max iterations reached: did not reach convergence")
+        }
+        
         count=count+1
         #minimizing function
         mf<- -chol2inv(chol(nh)) %*% ng
