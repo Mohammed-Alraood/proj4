@@ -4,11 +4,11 @@
 #contribution: 
 #Chloe Bircham:Created minimizing function mf, apply to function, perturb if matrix not positive def
 ##check for convergence and set maxit, maxhalf conditions.
-#Mohammed Alraood:
+#Mohammed Alraood:Created the repo, approx Hessian by finite differencing, warning message, create newt function
 #Xinyan Chen:Provide specific iterative steps for Newton's method, check the code and suggest changes
 ##and comments on the gradient comparison and warning parts.
 
-fdhess<-function(theta,grad,hess){
+fdhess<-function(theta,grad,hess,...){
   #function for finding finite difference of hessian if it is not provided
   #input theta values, gradient vector and hess provided or =NULL
   #returns the hessian
@@ -156,27 +156,8 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
     
     warning("The Hessian matrix is not finite at convergence")
   }
-  rl<-list(f=fmin,theta,iter,g=gmin,Hi)
+  rl<-list(f=fmin,theta=theta,iter=iter,g=gmin,Hi=Hi)
   
   return(rl)
-  
-  
-}
-
-
-#given functions
-
-rb <- function(th,k=2) {
-  k*(th[2]-th[1]^2)^2 + (1-th[1])^2
-}
-gb <- function(th,k=2) {
-  c(-2*(1-th[1])-k*4*th[1]*(th[2]-th[1]^2),k*2*(th[2]-th[1]^2))
-}
-
-hb <- function(th,k=2) {
-  h <- matrix(0,2,2)
-  h[1,1] <- 2-k*2*(2*(th[2]-th[1]^2) - 4*th[1]^2)
-  h[2,2] <- 2*k
-  h[1,2] <- h[2,1] <- -4*k*th[1]
-  h
+   
 }
