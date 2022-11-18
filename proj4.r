@@ -8,7 +8,7 @@
 #Xinyan Chen:Provide specific iterative steps for Newton's method, check the code and suggest changes
 ##and comments on the gradient comparison and warning parts.
 
-fdhess<-function(theta,grad,hess,...){
+fdhess<-function(theta,grad,hess,eps,...){
       #function for finding finite difference of hessian if it is not provided
       #input theta values, gradient vector and hess provided or =NULL
       #returns the hessian as an output
@@ -21,7 +21,6 @@ fdhess<-function(theta,grad,hess,...){
       for (i in 1:length((theta))) {
         #loop to go through theta and find the second derivative
         the1 <- theta #assign the1 to theta
-        eps=1e-6 #finite difference interval
         the1[i] <- the1[i] + eps   ##compute resulting 
         hess1 <- grad(the1,...) ##compute resulting in gradient 
         Hfd [i,] <- (hess1-hees)/eps  ##approximate second derives
@@ -59,11 +58,11 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
     #Hi: the inverse of the hessian at minimum
 
     #call finite difference hessian function to determine hessian matrix, if hess defined or not
-    nh<-fdhess(theta,grad,hess)
+    nh<-fdhess(theta,grad,hess,eps,...)
 
     #evaluate function and grad at initial theta
-    nf<-func(theta)
-    ng<-grad(theta)
+    nf<-func(theta,...)
+    ng<-grad(theta,...)
 
     #find eigenvalues for evaluating if postive definitive 
     eigenvals<-eigen(nh)[[1]]
@@ -130,10 +129,10 @@ newt<-function(theta,func,grad,hess=NULL,...,tol=1e-8, fscale=1,maxit=100, max.h
       theta<-theta+mf
 
       #evaluate function, gradient and hessian at the new theta
-      nf<-func(theta)
-      ng<-grad(theta)
+      nf<-func(theta,...)
+      ng<-grad(theta,...)
       #computing new hessian at min
-      nh<-fdhess(theta,grad,hess)
+      nh<-fdhess(theta,grad,hess,eps,...)
 
 
       #check if we have reached convergence
